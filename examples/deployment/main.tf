@@ -46,4 +46,11 @@ module "container_app" {
   resource_group_name = azurerm_resource_group.test.name
   resource_suffix     = var.resource_suffix
   tags                = var.tags
+
+  # Container App
+  container_app_revision_mode = var.container_app_revision_mode
+
+  # Monitoring
+  monitoring_enabled         = var.monitoring_enabled
+  log_analytics_workspace_id = azurerm_log_analytics_workspace.test[0].id
 }

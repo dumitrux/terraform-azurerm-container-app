@@ -10,7 +10,7 @@ resource "azurerm_container_app" "container_app" {
   name                         = "example-app"
   container_app_environment_id = azurerm_container_app_environment.container_env.id
   resource_group_name          = var.resource_group_name
-  revision_mode                = "Single"
+  revision_mode                = var.container_app_revision_mode
 
   template {
     container {

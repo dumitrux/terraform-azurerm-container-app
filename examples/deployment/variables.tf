@@ -1,3 +1,9 @@
+variable "container_app_revision_mode" {
+  default     = "Single"
+  description = "The revisions operational mode for the Container App"
+  type        = string
+}
+
 variable "container_app_monitoring_metrics" {
   default     = []
   description = "A list of Container App metric namespaces to monitor if monitoring is enabled"

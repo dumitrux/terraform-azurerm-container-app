@@ -12,3 +12,8 @@ output "container_app_ips" {
   description = "The IPs of the Latest Revision of the Container App."
   value       = azurerm_container_app_environment.container_env.static_ip_address
 }
+
+output "container_app_name" {
+  description = "The name of the Container App."
+  value       = azurerm_container_app.container_app.name
+}
