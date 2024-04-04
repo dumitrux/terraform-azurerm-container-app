@@ -52,5 +52,5 @@ module "container_app" {
 
   # Monitoring
   monitoring_enabled         = var.monitoring_enabled
-  log_analytics_workspace_id = azurerm_log_analytics_workspace.test[0].id
+  log_analytics_workspace_id = var.monitoring_enabled ? azurerm_log_analytics_workspace.test[0].id : var.log_analytics_workspace_id
 }
