@@ -71,4 +71,4 @@ jobs:
       # Run Terraform test
       - name: Terraform Test
         run: |
-          terraform test
+          terraform test 
