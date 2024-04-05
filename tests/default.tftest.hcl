@@ -18,7 +18,7 @@ run "default_example" {
   }
 }
 
-run "error_revision_mode_example" {
+run "revision_mode_example" {
 
   command = apply
 
@@ -27,7 +27,7 @@ run "error_revision_mode_example" {
   }
 
   variables {
-    container_app_revision_mode = "error"
+    container_app_revision_mode = "Multiple"
   }
 
   assert {
