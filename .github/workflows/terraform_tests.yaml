@@ -54,6 +54,4 @@ jobs:
       # Run Terraform test
       - name: Terraform Test
         run: |
-          pwd
-          ls -la
           terraform test -var-file="examples_config/configurations/default.tfvars"
