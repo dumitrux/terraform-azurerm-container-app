@@ -1,4 +1,4 @@
-# terraform-azurerm-container-app <!-- omit in toc -->
+# terraform-azurerm-tests <!-- omit in toc -->
 
 - [Container App](#container-app)
 - [Workflows](#workflows)
