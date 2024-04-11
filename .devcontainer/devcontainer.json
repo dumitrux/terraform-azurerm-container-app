@@ -38,7 +38,8 @@
 		},
 		"ghcr.io/devcontainers-contrib/features/pre-commit:2": {
 			"version": "latest"
-		}
+		},
+		"ghcr.io/devcontainers/features/go:1": {}
 
 		// Miscellany
 		// "ghcr.io/devcontainers/features/github-cli:1": {},
@@ -50,7 +51,6 @@
 		// "ghcr.io/devcontainers-contrib/features/bash-command:1": {},
 
 		// Programming languages
-		// "ghcr.io/devcontainers/features/go:1": {},
 		// "ghcr.io/devcontainers/features/python:1": {},
 
 		// OS Package managers

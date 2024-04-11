@@ -1,0 +1,58 @@
+name: 'Terraform Tests'
+run-name: ${{ github.event.head_commit.message }}
+
+on:
+  workflow_dispatch:
+
+env:
+  # Disable Terraform input prompts and user-mode output
+  TF_IN_AUTOMATION: true
+  TF_INPUT: 0
+
+  # Enable Terraform debug logging if GitHub Actions step debugging is enabled
+  TF_LOG: ${{ secrets.ACTIONS_STEP_DEBUG == 'true' && 'DEBUG' || 'ERROR' }}
+
+jobs:
+  terratest:
+    name: 'Terratest'
+    runs-on: ubuntu-latest
+
+    env:
+      # Required for Terraform service principal authentication
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+
+    steps:
+      # Checkout the repo
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      # Use a custom access token for access to dependant private repos
+      - name: Configure Git
+        run: |
+          echo "Configuring git for custom PAT..."
+          git config --global url."https://oauth2:${{ secrets.TERAS_PAT }}@github.com".insteadOf https://github.com
+
+      # Install Terraform on the runner agent
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      # Install Go on the runner agent
+      - name: Setup Go
+        uses: actions/setup-go@v5
+
+      # Login to Azure using the service principal credentials
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: '{"clientId":"${{ env.ARM_CLIENT_ID }}","clientSecret":"${{ secrets.ARM_CLIENT_SECRET }}","subscriptionId":"${{ env.ARM_SUBSCRIPTION_ID }}","tenantId":"${{ env.ARM_TENANT_ID }}"}'
+
+      # Run Terratest test
+      - name: Terratest Test
+        run: |
+          cd terratest
+          go mod init ${{ github.event.repository.name }}
+          go mod tidy
+          go test -timeout 30m

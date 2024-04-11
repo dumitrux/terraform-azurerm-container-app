@@ -3,23 +3,8 @@ run-name: ${{ github.event.head_commit.message }}
 
 on:
   workflow_dispatch:
-    inputs:
-      # The name of the GitHub environment to reference
-      environment:
-        default: dev
-        description: 'Environment:'
-        required: true
-        type: string
 
 env:
-  # Use the environment-specific state file for Terraform init commands
-  # TF_CLI_ARGS_init: |
-  #   -backend-config="subscription_id=${{ secrets.ARM_SUBSCRIPTION_ID }}"
-  #   -backend-config="resource_group_name=${{ vars.TF_STATE_RESOURCE_GROUP_NAME }}"
-  #   -backend-config="storage_account_name=${{ vars.TF_STATE_STORAGE_ACCOUNT_NAME }}"
-  #   -backend-config="container_name=${{ vars.TF_STATE_CONTAINER_NAME }}"
-  #   -backend-config="key=${{ inputs.environment}}.tfstate"
-
   # Disable Terraform input prompts and user-mode output
   TF_IN_AUTOMATION: true
   TF_INPUT: 0
@@ -28,11 +13,9 @@ env:
   TF_LOG: ${{ secrets.ACTIONS_STEP_DEBUG == 'true' && 'DEBUG' || 'ERROR' }}
 
 jobs:
-  test:
+  terraform_tests:
     name: 'Terraform Test'
     runs-on: ubuntu-latest
-    environment:
-      name: ${{ inputs.environment }}
 
     env:
       # Required for Terraform service principal authentication
@@ -71,4 +54,4 @@ jobs:
       # Run Terraform test
       - name: Terraform Test
         run: |
-          terraform test 
+          terraform test -var-file="examples_config/configurations/default.tfvars"
