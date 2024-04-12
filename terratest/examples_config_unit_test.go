@@ -1,61 +1,44 @@
 package test
 
 import (
-	"os"
-	"path"
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
-	terraformCore "github.com/hashicorp/terraform/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
-func UnitTestExampleDefault(t *testing.T) {
+// An example of how to test the Terraform module in examples using Terratest.
+func TestTerraformAzureExamplePlan(t *testing.T) {
 	t.Parallel()
 
-	terraformOptions := &terraform.Options{
+	// Make a copy of the terraform module to a temporary directory. This allows running multiple tests in parallel
+	// against the same terraform module.
+	// exampleFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples_config/deployment")
+
+	expectedName := "container-app-env-uks-test"
+
+	// website::tag::1::Configure Terraform setting path to Terraform code. We also
+	// configure the options with default retryable errors to handle the most common retryable errors encountered in
+	// terraform testing.
+	// planFilePath := filepath.Join("../examples_config/deployment", "plan.out")
+	terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+		// The path to where our Terraform code is located
 		TerraformDir: "../examples_config/deployment",
-		Upgrade:      true,
-		VarFiles:     []string{"../configurations/default.tfvars"},
-	}
 
-	// Terraform init and plan only
-	tfPlanOutput := "terraform.tfplan"
-	terraform.Init(t, terraformOptions)
-	terraform.RunTerraformCommand(t, terraformOptions, terraform.FormatArgs(terraformOptions, "plan", "-out="+tfPlanOutput)...)
+		// Variables to pass to our Terraform code using -var-file options
+		VarFiles: []string{"../configurations/default.tfvars"},
+		// Upgrade:  true,
 
-	// Read and parse the plan output
-	f, err := os.Open(path.Join(terraformOptions.TerraformDir, tfPlanOutput))
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer f.Close()
-	plan, err := terraformCore.ReadPlan(f)
-	if err != nil {
-		t.Fatal(err)
-	}
+		// Configure a plan file path so we can introspect the plan and make assertions about it.
+		PlanFilePath: "plan.out",
+	})
 
-	// Validate the test result
-	for _, mod := range plan.Diff.Modules {
-		if len(mod.Path) == 2 && mod.Path[0] == "root" && mod.Path[1] == "terraform-tests" {
-			actual := mod.Resources["module.container_apps"].Attributes["container_app_environment_name"].New
-			if actual != "container-app-env-uks-test" {
-				t.Fatalf("Expect %v, but found %v", "container-app-env-uks-test", actual)
-			}
-		}
-	}
+	// website::tag::2::Run `terraform init`, `terraform plan`, and `terraform show` and fail the test if there are any errors
+	plan := terraform.InitAndPlanAndShowWithStruct(t, terraformOptions)
 
+	// website::tag::3::Use the go struct to introspect the plan values.
+	terraform.RequirePlannedValuesMapKeyExists(t, plan, "module.container_apps.azurerm_container_app_environment.container_env[0]")
+	container_app_environment := plan.ResourcePlannedValuesMap["module.container_apps.azurerm_container_app_environment.container_env[0]"]
+	container_app_environment_name := container_app_environment.AttributeValues["name"]
+	assert.Equal(t, expectedName, container_app_environment_name)
 }
-
-// func TestPrivateNetworking(t *testing.T) {
-// 	terraformOptions := &terraform.Options{
-// 		// Source path of Terraform directory
-// 		TerraformDir: "../examples/deployment",
-// 		VarFiles:     []string{"../configurations/private-networking.tfvars"},
-// 	}
-
-// 	// To clean up the resources that have been created
-// 	defer terraform.Destroy(t, terraformOptions)
-
-// 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
-// 	terraform.InitAndApply(t, terraformOptions)
-// }

@@ -1,6 +1,6 @@
 # [Diagnostic Setting](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/monitor_diagnostic_setting)
 resource "azurerm_monitor_diagnostic_setting" "container_apps" {
-  for_each = azurerm_container_app.container_app
+  for_each = { for app in azurerm_container_app.container_app : app.name => app if var.monitoring_enabled == true }
 
   name                       = "diagnostic-settings-${each.value.name}"
   target_resource_id         = each.value.id
