@@ -38,6 +38,8 @@ jobs:
       # Install Terraform on the runner agent
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
 
       # Install Go on the runner agent
       - name: Setup Go
@@ -66,8 +68,7 @@ jobs:
       - name: Terratest Log Parser
         run: |
           cd terratest
-          ls -la
           terratest_log_parser -testlog terratest_output.log -outputdir logparser_output
           ls -la logparser_output
           cat logparser_output/summary.log
-          cat logparser_output/UnitTestExampleDefault.log
+          cat logparser_output/TestUT_Default.log

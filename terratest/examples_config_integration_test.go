@@ -7,12 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIT_ExampleDefault(t *testing.T) {
+func TestIT_Default(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples_config/deployment",
-		Upgrade:      true,
 		VarFiles:     []string{"../configurations/default.tfvars"},
 	}
 

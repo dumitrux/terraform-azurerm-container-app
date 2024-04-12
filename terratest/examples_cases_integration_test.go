@@ -11,7 +11,6 @@ func TestIT_Startup(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples_cases/startup",
-		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"location": "uksouth",
 		},
@@ -29,7 +28,6 @@ func TestIT_InitContainer(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples_cases/init-container",
-		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"location": "uksouth",
 		},
@@ -47,7 +45,6 @@ func TestIT_ACR(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples_cases/acr",
-		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"location": "uksouth",
 		},

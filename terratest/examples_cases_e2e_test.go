@@ -15,7 +15,6 @@ func TestE2E_InitContainer(t *testing.T) {
 
 	terraformOptions := &terraform.Options{
 		TerraformDir: "../examples_cases/init-container",
-		Upgrade:      true,
 		Vars: map[string]interface{}{
 			"location": "uksouth",
 		},

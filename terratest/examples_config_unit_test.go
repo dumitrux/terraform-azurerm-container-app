@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUT_ExampleDefault(t *testing.T) {
+func TestUT_Default(t *testing.T) {
 	t.Parallel()
 
 	// Make a copy of the terraform module to a temporary directory. This allows running multiple tests in parallel
