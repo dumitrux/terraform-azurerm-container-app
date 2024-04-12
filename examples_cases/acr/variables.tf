@@ -14,5 +14,5 @@ variable "location" {
 }
 
 variable "resource_suffix" {
-  default     = "eus-test"
+  default = "eus-test"
 }

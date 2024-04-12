@@ -4,7 +4,7 @@ variables {
   resource_suffix     = "uks-test"
 }
 
-run "default_example_config" {
+run "integration_test_example_default" {
 
   command = apply
 
@@ -18,7 +18,7 @@ run "default_example_config" {
   }
 }
 
-run "monitoring_example_config" {
+run "integration_test_example_monitoring" {
 
   command = apply
 
