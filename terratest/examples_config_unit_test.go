@@ -7,8 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// An example of how to test the Terraform module in examples using Terratest.
-func TestTerraformAzureExamplePlan(t *testing.T) {
+func UnitTestExampleDefault(t *testing.T) {
 	t.Parallel()
 
 	// Make a copy of the terraform module to a temporary directory. This allows running multiple tests in parallel
@@ -30,7 +29,7 @@ func TestTerraformAzureExamplePlan(t *testing.T) {
 		// Upgrade:  true,
 
 		// Configure a plan file path so we can introspect the plan and make assertions about it.
-		PlanFilePath: "plan.out",
+		PlanFilePath: "unittest_plan.out",
 	})
 
 	// website::tag::2::Run `terraform init`, `terraform plan`, and `terraform show` and fail the test if there are any errors

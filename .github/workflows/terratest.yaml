@@ -68,6 +68,6 @@ jobs:
           cd terratest
           ls -la
           terratest_log_parser -testlog terratest_output.log -outputdir logparser_output
-          ls -la terratest_output
+          ls -la logparser_output
           cat logparser_output/summary.log
           cat logparser_output/UnitTestExampleDefault.log
