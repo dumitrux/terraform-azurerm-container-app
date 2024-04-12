@@ -3,7 +3,7 @@ resource "azurerm_monitor_diagnostic_setting" "container_apps" {
   for_each = { for container_app in var.container_apps : container_app.name => container_app if var.monitoring_enabled }
 
   name                       = "${each.value.name}-diagnostic-settings"
-  target_resource_id         = azurerm_container_app.container_app[each.key].id
+  target_resource_id         = each.value.id
   log_analytics_workspace_id = var.log_analytics_workspace_id
 
   dynamic "metric" {
