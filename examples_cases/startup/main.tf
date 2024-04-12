@@ -1,17 +1,17 @@
 resource "azurerm_resource_group" "test" {
   location = var.location
-  name     = "rg-terratest-startup-${var.resource_suffix}"
+  name     = "rg-terratest-startup-${var.resource_suffix}-${random_id.rg_name.hex}"
 }
 
 module "container_apps" {
   source                         = "../.."
   resource_group_name            = azurerm_resource_group.test.name
   location                       = var.location
-  container_app_environment_name = "container-app-env-${var.resource_suffix}"
+  container_app_environment_name = "cae-${var.resource_suffix}-${random_id.env_name.hex}"
 
   container_apps = {
     counting = {
-      name          = "counting-container-app-${var.resource_suffix}"
+      name          = local.counting_app_name
       revision_mode = "Single"
 
       template = {
@@ -42,7 +42,7 @@ module "container_apps" {
       }
     },
     dashboard = {
-      name          = "dashboard-container-app-${var.resource_suffix}"
+      name          = local.dashboard_app_name
       revision_mode = "Single"
 
       template = {
@@ -59,7 +59,7 @@ module "container_apps" {
               },
               {
                 name  = "COUNTING_SERVICE_URL"
-                value = "http://counting-container-app"
+                value = "http://${local.counting_app_name}"
               }
             ]
           },

@@ -55,9 +55,9 @@ terraform test -var-file="../../examples_config/configurations/default.tfvars"
 ```bash
 cd terratest
 
-go mod init terraform-azurerm-tests
+go mod init terraform-tests
 go mod tidy
-go test -timeout 30m | tee terratest_output.log
+go test -timeout 40m | tee terratest_output.log
 ```
 
 #### Debugging interleaved test output

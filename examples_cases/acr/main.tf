@@ -1,7 +1,3 @@
-resource "random_id" "acr_name" {
-  byte_length = 4
-}
-
 resource "null_resource" "docker_push" {
   provisioner "local-exec" {
     command = "docker login -u ${azurerm_container_registry_token.pushtoken.name} -p ${azurerm_container_registry_token_password.pushtokenpassword.password1[0].value} https://${azurerm_container_registry.acr.login_server}"
@@ -13,7 +9,7 @@ resource "null_resource" "docker_push" {
 
 resource "azurerm_resource_group" "test" {
   location = var.location
-  name     = "rg-terratest-acr-${var.resource_suffix}"
+  name     = "rg-terratest-acr-${var.resource_suffix}-${random_id.rg_name.hex}"
 }
 
 module "public_ip" {
@@ -186,12 +182,12 @@ module "container_apps" {
 
   resource_group_name                                = azurerm_resource_group.test.name
   location                                           = azurerm_resource_group.test.location
-  container_app_environment_name                     = "container-app-env-${var.resource_suffix}"
+  container_app_environment_name                     = "cae-${var.resource_suffix}-${random_id.env_name.hex}"
   container_app_environment_infrastructure_subnet_id = azurerm_subnet.subnet.id
 
   container_apps = {
     nginx = {
-      name          = "nginx-${var.resource_suffix}"
+      name          = "nginx-${var.resource_suffix}-${random_id.container_name.hex}"
       revision_mode = "Single"
 
       template = {

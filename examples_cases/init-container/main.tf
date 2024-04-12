@@ -1,17 +1,18 @@
 resource "azurerm_resource_group" "test" {
   location = var.location
-  name     = "rg-terratest-initcontainer-${var.resource_suffix}"
+  name     = "rg-terratest-initcontainer-${var.resource_suffix}-${random_id.rg_name.hex}"
 }
+
 
 module "container_apps" {
   source                         = "../.."
   resource_group_name            = azurerm_resource_group.test.name
   location                       = var.location
-  container_app_environment_name = "container-app-env-${var.resource_suffix}"
+  container_app_environment_name = "cae-${var.resource_suffix}-${random_id.env_name.hex}"
 
   container_apps = {
     example = {
-      name          = "example-container-app-${var.resource_suffix}"
+      name          = "example-ca-${random_id.container_name.hex}"
       revision_mode = "Single"
 
       template = {

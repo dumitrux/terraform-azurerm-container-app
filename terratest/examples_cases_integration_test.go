@@ -6,7 +6,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/terraform"
 )
 
-func IntegrationTestExampleStartup(t *testing.T) {
+func TestIT_Startup(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
@@ -24,7 +24,7 @@ func IntegrationTestExampleStartup(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 }
 
-func IntegrationTestExampleInitContainer(t *testing.T) {
+func TestIT_InitContainer(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
@@ -42,7 +42,7 @@ func IntegrationTestExampleInitContainer(t *testing.T) {
 	terraform.InitAndApply(t, terraformOptions)
 }
 
-func IntegrationTestExampleACR(t *testing.T) {
+func TestIT_ACR(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{

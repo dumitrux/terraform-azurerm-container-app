@@ -47,11 +47,11 @@ module "container_apps" {
   tags                = var.tags
 
   # Container App
-  container_app_environment_name = "container-app-env-${var.resource_suffix}"
+  container_app_environment_name = "cae-${var.resource_suffix}"
 
   container_apps = {
     counting = {
-      name          = "counting-container-app-${var.resource_suffix}"
+      name          = "counting-ca-${var.resource_suffix}"
       revision_mode = "Single"
 
       template = {
@@ -82,7 +82,7 @@ module "container_apps" {
       }
     },
     dashboard = {
-      name          = "dashboard-container-app-${var.resource_suffix}"
+      name          = "dashboard-ca-${var.resource_suffix}"
       revision_mode = "Single"
 
       template = {
@@ -99,7 +99,7 @@ module "container_apps" {
               },
               {
                 name  = "COUNTING_SERVICE_URL"
-                value = "http://counting-container-app"
+                value = "http://counting-ca-${var.resource_suffix}"
               }
             ]
           },

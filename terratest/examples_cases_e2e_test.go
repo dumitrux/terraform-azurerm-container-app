@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func E2ETestExampleInitContainer(t *testing.T) {
+func TestE2E_InitContainer(t *testing.T) {
 	t.Parallel()
 
 	terraformOptions := &terraform.Options{
