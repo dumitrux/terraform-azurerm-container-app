@@ -12,3 +12,7 @@ variable "location" {
   type    = string
   default = "eastus"
 }
+
+variable "resource_suffix" {
+  default     = "eus-test"
+}

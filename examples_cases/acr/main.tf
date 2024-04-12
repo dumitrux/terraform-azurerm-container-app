@@ -1,12 +1,4 @@
-resource "random_id" "rg_name" {
-  byte_length = 8
-}
-
-resource "random_id" "env_name" {
-  byte_length = 8
-}
-
-resource "random_id" "container_name" {
+resource "random_id" "acr_name" {
   byte_length = 4
 }
 
@@ -21,7 +13,7 @@ resource "null_resource" "docker_push" {
 
 resource "azurerm_resource_group" "test" {
   location = var.location
-  name     = "example-container-app-${random_id.rg_name.hex}"
+  name     = "rg-terratest-acr-${var.resource_suffix}"
 }
 
 module "public_ip" {
@@ -29,14 +21,10 @@ module "public_ip" {
   version = "0.1.0"
 }
 
-locals {
-  public_ip = module.public_ip.public_ip
-}
-
 resource "azurerm_virtual_network" "vnet" {
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.test.location
-  name                = "virtualnetwork1"
+  name                = "vnet-${var.resource_suffix}"
   resource_group_name = azurerm_resource_group.test.name
 }
 
@@ -52,7 +40,7 @@ resource "azurerm_subnet" "subnet" {
 
 resource "azurerm_private_endpoint" "pep" {
   location            = azurerm_resource_group.test.location
-  name                = "mype"
+  name                = "pe-${var.resource_suffix}"
   resource_group_name = azurerm_resource_group.test.name
   subnet_id           = azurerm_subnet.subnet.id
 
@@ -76,23 +64,12 @@ resource "azurerm_private_dns_zone_virtual_network_link" "vnetlink_private" {
   virtual_network_id    = azurerm_virtual_network.vnet.id
 }
 
-locals {
-  acr_login_server = [
-    for c in azurerm_private_endpoint.pep.custom_dns_configs : c.ip_addresses[0]
-    if c.fqdn == "${azurerm_container_registry.acr.name}.azurecr.io"
-  ][0]
-}
-
 resource "azurerm_private_dns_a_record" "private" {
   name                = azurerm_container_registry.acr.name
   records             = [local.acr_login_server]
   resource_group_name = azurerm_resource_group.test.name
   ttl                 = 3600
   zone_name           = azurerm_private_dns_zone.pdz.name
-}
-
-locals {
-  data_endpoint_ips = { for e in azurerm_private_endpoint.pep.custom_dns_configs : e.fqdn => e.ip_addresses[0] }
 }
 
 resource "azurerm_private_dns_a_record" "data" {
@@ -109,7 +86,8 @@ resource "azurerm_container_registry" "acr" {
   #checkov:skip=CKV_AZURE_139: Public network access is required for the test
   #checkov:skip=CKV_AZURE_166: Quarantine would block our test so we skip it
   location                      = azurerm_resource_group.test.location
-  name                          = "acr${random_id.container_name.hex}"
+  # Remove the character "-" from the name "acr-${var.resource_suffix}" and its variables
+  name                          = replace("acr-${var.resource_suffix}-${random_id.acr_name.hex}", "-", "")
   resource_group_name           = azurerm_resource_group.test.name
   sku                           = "Premium"
   admin_enabled                 = false
@@ -208,12 +186,12 @@ module "container_apps" {
 
   resource_group_name                                = azurerm_resource_group.test.name
   location                                           = azurerm_resource_group.test.location
-  container_app_environment_name                     = "example-env-${random_id.env_name.hex}"
+  container_app_environment_name                     = "container-app-env-${var.resource_suffix}"
   container_app_environment_infrastructure_subnet_id = azurerm_subnet.subnet.id
 
   container_apps = {
     nginx = {
-      name          = "nginx"
+      name          = "nginx-${var.resource_suffix}"
       revision_mode = "Single"
 
       template = {

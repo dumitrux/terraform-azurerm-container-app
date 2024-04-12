@@ -55,4 +55,22 @@ jobs:
           cd terratest
           go mod init ${{ github.event.repository.name }}
           go mod tidy
-          go test -timeout 30m
+          go test -timeout 30m | tee terratest_output.log
+      
+      # Install Terratest Log Parser
+      - name: Setup Terratest Log Parser
+        run: |
+          # Use curl to download the binary
+          # curl --location --silent --fail --show-error -o terratest_log_parser https://github.com/gruntwork-io/terratest/releases/download/v0.13.13/terratest_log_parser_linux_amd64
+          # Make the downloaded binary executable
+          # chmod +x terratest_log_parser
+          # Place the downloaded binary to a place in the PATH
+          # sudo mv terratest_log_parser /usr/local/bin
+          go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
+      
+      # Run Terratest Log Parser
+      - name: Terratest Log Parser
+        run: |
+          cd terratest
+          terratest_log_parser -testlog terratest_output.log -outputdir test_output
+          ls -la test_output

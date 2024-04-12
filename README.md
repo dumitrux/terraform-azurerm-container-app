@@ -35,6 +35,8 @@
 
 ### Terraform Tests
 
+- [Write Terraform Tests | Terraform | HashiCorp Developer](https://developer.hashicorp.com/terraform/tutorials/configuration-language/test)
+
 ```bash
 terraform init
 

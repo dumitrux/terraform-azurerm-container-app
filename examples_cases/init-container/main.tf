@@ -1,29 +1,17 @@
-resource "random_id" "rg_name" {
-  byte_length = 8
-}
-
-resource "random_id" "env_name" {
-  byte_length = 8
-}
-
-resource "random_id" "container_name" {
-  byte_length = 4
-}
-
 resource "azurerm_resource_group" "test" {
   location = var.location
-  name     = "example-container-app-${random_id.rg_name.hex}-init-container"
+  name     = "rg-terratest-initcontainer-${var.resource_suffix}"
 }
 
 module "container_apps" {
   source                         = "../.."
   resource_group_name            = azurerm_resource_group.test.name
   location                       = var.location
-  container_app_environment_name = "example-env-${random_id.env_name.hex}"
+  container_app_environment_name = "container-app-env-${var.resource_suffix}"
 
   container_apps = {
     example = {
-      name          = "example"
+      name          = "example-container-app-${var.resource_suffix}"
       revision_mode = "Single"
 
       template = {

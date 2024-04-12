@@ -1,5 +1,5 @@
 locals {
-  container_app_environment_id = try(data.azurerm_container_app_environment.container_env[0].id, azurerm_container_app_environment.container_env[0].id)
+  container_app_environment_id   = try(data.azurerm_container_app_environment.container_env[0].id, azurerm_container_app_environment.container_env[0].id)
   container_app_environment_name = try(data.azurerm_container_app_environment.container_env[0].name, azurerm_container_app_environment.container_env[0].name)
 }
 

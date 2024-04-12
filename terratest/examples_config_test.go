@@ -4,17 +4,14 @@ import (
 	"testing"
 
 	"github.com/gruntwork-io/terratest/modules/terraform"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestExamplesCaseStartup(t *testing.T) {
-	t.Parallel()
-
+func TestDefault(t *testing.T) {
 	terraformOptions := &terraform.Options{
-		TerraformDir: "../examples_cases/startup",
+		TerraformDir: "../examples_config/deployment",
 		Upgrade:      true,
-		Vars: map[string]interface{}{
-			"location": "uksouth",
-		},
+		VarFiles:     []string{"../configurations/default.tfvars"},
 	}
 
 	// To clean up the resources that have been created
@@ -22,24 +19,14 @@ func TestExamplesCaseStartup(t *testing.T) {
 
 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
 	terraform.InitAndApply(t, terraformOptions)
+
+	// Run `terraform output` to get the values of output variables
+	container_app_env_name := terraform.Output(t, terraformOptions, "container_app_environment_name")
+
+	// website::tag::3::Check the output against expected values.
+	// Verify we're getting back the outputs we expect
+	assert.Equal(t, "container-app-env-uks-test", container_app_env_name)
 }
-
-// func TestDefault(t *testing.T) {
-// 	terraformOptions := &terraform.Options{
-// 		TerraformDir: "../examples/deployment",
-// 		VarFiles:     []string{"../configurations/default.tfvars"},
-// 		// It is more common to use the Vars map to set variables
-// 		// Vars: map[string]interface{}{
-// 		// 	"location": "uksouth",
-// 		// },
-// 	}
-
-// 	// To clean up the resources that have been created
-// 	defer terraform.Destroy(t, terraformOptions)
-
-// 	// This will run `terraform init` and `terraform apply` and fail the test if there are any errors
-// 	terraform.InitAndApply(t, terraformOptions)
-// }
 
 // func TestPrivateNetworking(t *testing.T) {
 // 	terraformOptions := &terraform.Options{

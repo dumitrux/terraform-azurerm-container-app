@@ -13,8 +13,31 @@ run "default_example_config" {
   }
 
   assert {
-    condition     = module.container_apps.container_app_environment_name == "container-app-env"
+    condition     = module.container_apps.container_app_environment_name == "container-app-env-uks-test"
     error_message = "Container App name did not match expected"
+  }
+}
+
+run "monitoring_example_config" {
+
+  command = apply
+
+  module {
+    source = "./examples_config/deployment"
+  }
+
+  variables {
+    monitoring_enabled = true
+  }
+
+  assert {
+    condition     = module.container_apps.container_app_environment_name == "container-app-env-uks-test"
+    error_message = "Container App name did not match expected"
+  }
+
+  assert {
+    condition     = can(azurerm_log_analytics_workspace.test[0].id)
+    error_message = "Log Analytics Workspace does not exist"
   }
 }
 
