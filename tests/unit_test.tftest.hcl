@@ -13,7 +13,7 @@ run "integration_test_example_default" {
   }
 
   assert {
-    condition     = module.container_apps.container_app_environment_name == "container-app-env-uks-test"
+    condition     = module.container_apps.container_app_environment_name == "cae-uks-test"
     error_message = "Container App name did not match expected"
   }
 }

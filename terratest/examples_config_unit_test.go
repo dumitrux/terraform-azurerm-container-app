@@ -14,7 +14,7 @@ func TestUT_Default(t *testing.T) {
 	// against the same terraform module.
 	// exampleFolder := test_structure.CopyTerraformFolderToTemp(t, "../", "examples_config/deployment")
 
-	expectedName := "container-app-env-uks-test"
+	expectedName := "cae-uks-test"
 
 	// website::tag::1::Configure Terraform setting path to Terraform code. We also
 	// configure the options with default retryable errors to handle the most common retryable errors encountered in

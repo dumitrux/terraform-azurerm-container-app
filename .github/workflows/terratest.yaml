@@ -65,10 +65,19 @@ jobs:
           go install github.com/gruntwork-io/terratest/cmd/terratest_log_parser@latest
       
       # Run Terratest Log Parser
-      - name: Terratest Log Parser
+      - name: Run Terratest Log Parser
         run: |
           cd terratest
           terratest_log_parser -testlog terratest_output.log -outputdir logparser_output
-          ls -la logparser_output
-          cat logparser_output/summary.log
-          cat logparser_output/TestUT_Default.log
+
+      - name: Show Terratest Log Parser
+        run: |
+          cd terratest/logparser_output
+          cat summary.log && printf "\n\n"
+          ls -la && printf "\n\n"
+          cat TestE2E_InitContainer.log
+          cat TestIT_ACR.log
+          cat TestIT_Default.log
+          cat TestIT_InitContainer.log
+          cat TestIT_Startup.log
+          cat TestUT_Default.log

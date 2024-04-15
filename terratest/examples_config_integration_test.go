@@ -26,5 +26,5 @@ func TestIT_Default(t *testing.T) {
 
 	// website::tag::3::Check the output against expected values.
 	// Verify we're getting back the outputs we expect
-	assert.Equal(t, "container-app-env-uks-test", container_app_env_name)
+	assert.Equal(t, "cae-uks-test", container_app_env_name)
 }
