@@ -1,86 +1,59 @@
-# terraform-azurerm-tests <!-- omit in toc -->
+# Terraform Testing <!-- omit in toc -->
 
-- [Container App](#container-app)
-- [Workflows](#workflows)
-  - [Approve deployments](#approve-deployments)
-- [Tests](#tests)
-  - [Terraform Tests](#terraform-tests)
-  - [Terratest](#terratest)
-    - [Debugging interleaved test output](#debugging-interleaved-test-output)
-- [Manually deploy examples](#manually-deploy-examples)
-  - [Examples configurations](#examples-configurations)
-  - [Examples cases](#examples-cases)
-- [Docs](#docs)
-  - [Changelog](#changelog)
-  - [Dependenbot](#dependenbot)
-  - [Rover](#rover)
-    - [Generate static files](#generate-static-files)
-    - [Terragrunt plan output](#terragrunt-plan-output)
-    - [PowerShell](#powershell)
+This repository showcases different levels of testing for Infrastructure as Code using Terraform. Within the test directories, there are examples of Unit, Integration, and End-To-End tests employing both Terraform's built-in testing feature and the Terratest tool.
 
-## Container App
+## Table of Contents <!-- omit in toc -->
+- [Module Container App](#module-container-app)
+- [Testing tools](#testing-tools)
+- [Recording test results](#recording-test-results)
+- [Deploy examples](#deploy-examples)
+
+## Module Container App
+
+Tests are conducted on a module serving as an illustrative example. This module represents an Azure Container App and is based after Microsoft's examples:
 
 - [Azure Container Apps overview | Microsoft Learn](https://learn.microsoft.com/en-gb/azure/container-apps/overview).  
-- Example in [Azure/terraform-azure-container-apps: A Terraform module to deploy a container app in Azure (github.com)](https://github.com/Azure/terraform-azure-container-apps).
+- Example in [Azure/terraform-azure-container-apps: A Terraform module to deploy a container app in Azure (github.com)](https://github.com/Azure/terraform-azure-container-apps)
   - This example uses workflows and scripts from [tfmod-scaffold/scripts at main · Azure/tfmod-scaffold (github.com)](https://github.com/Azure/tfmod-scaffold/tree/main/scripts)
 
-## Workflows
+## Testing tools
 
-### Approve deployments
+### Terraform Tests
+
+- Official documentation: [Write Terraform Tests | Terraform | HashiCorp Developer](https://developer.hashicorp.com/terraform/tutorials/configuration-language/test)
+- Code directory: [tests](tests/)
+- Workflow file: [terraform_tests.yaml](.github/workflows/terraform_tests.yaml)
+
+Example output from GitHub Actions:
+![terraform-tests-output.png](docs/images/terraform-tests-output.png)
+
+### Terratest
+
+- Official documentation:
+  - [Quick start (gruntwork.io)](https://terratest.gruntwork.io/docs/getting-started/quick-start/)
+  - [terratest/test/terraform_basic_example_test.go at master · gruntwork-io/terratest (github.com)](https://github.com/gruntwork-io/terratest/blob/master/test/terraform_basic_example_test.go)
+  - [Debugging interleaved test output (gruntwork.io)](https://terratest.gruntwork.io/docs/testing-best-practices/debugging-interleaved-test-output/)
+- Code directory: [terratest](terratest/)
+- Workflow file: [terratest.yaml](.github/workflows/terratest.yaml)
+
+Example output from GitHub Actions:
+![terratest-output.png](docs/images/terratest-output.png)
+
+## Recording test results
+
+In certain scenarios, it could be beneficial to maintain a record of the test outcomes for each example whenever new releases occur. This practice becomes particularly relevant in cases where there might be bugs in the Terraform provider or certain edge cases that are safe to ignore but they should be tracked. For instance, this can be done by adding the file `examples_cases/acr/TestRecord.md` that includes the date, release version, indication of test success, and any encountered errors, if applicable.
+
+This documentation can be supplemented by a `docs/CHANGELOG.md` file outlining the modifications made in each release version, providing insight into the reasons behind the changes and test results.
+
+
+## Deploy examples
+
+### Workflows Approve deployments (TO-DO)
 
 - [GitHub Actions: Terraform deployments with a review of planned changes](https://itnext.io/github-actions-terraform-deployments-with-a-review-of-planned-changes-30143358bb5c)
 - [Reviewing deployments](https://docs.github.com/en/actions/managing-workflow-runs/reviewing-deployments)
 
-## Tests
-
-### Terraform Tests
-
-- [Write Terraform Tests | Terraform | HashiCorp Developer](https://developer.hashicorp.com/terraform/tutorials/configuration-language/test)
-
-```bash
-terraform init
-
-terraform test -var-file="examples_config/configurations/default.tfvars"
-
-terraform test -var-file="examples_config/configurations/private-networking.tfvars"
-
-terraform test -var-file="../../examples_config/configurations/default.tfvars"
-```
-
-### Terratest
-
-- [Quick start (gruntwork.io)](https://terratest.gruntwork.io/docs/getting-started/quick-start/)
-- [terratest/test/terraform_basic_example_test.go at master · gruntwork-io/terratest (github.com)](https://github.com/gruntwork-io/terratest/blob/master/test/terraform_basic_example_test.go)
-
-```bash
-cd terratest
-
-go mod init terraform-tests
-go mod tidy
-go test -timeout 40m | tee terratest_output.log
-```
-
-#### Debugging interleaved test output
-
-[Debugging interleaved test output (gruntwork.io)](https://terratest.gruntwork.io/docs/testing-best-practices/debugging-interleaved-test-output/)
-
-```bash
-curl --location --silent --fail --show-error -o terratest_log_parser https://github.com/gruntwork-io/terratest/releases/download/v0.13.13/terratest_log_parser_linux_amd64
-
-chmod +x terratest_log_parser
-
-sudo mv terratest_log_parser /usr/local/bin
-
-terratest_log_parser -testlog test_output.log -outputdir test_output
-```
-
-This will:
-
-- Create a file TEST_NAME.log for each test it finds from the test output containing the logs corresponding to that test.
-- Create a summary.log file containing the test result lines for each test.
-- Create a report.xml file containing a Junit XML file of the test summary (so it can be integrated in your CI).
-
-## Manually deploy examples
+### Manually deploy examples
 
 ```bash
 export ARM_CLIENT_ID="00000000-0000-0000-0000-000000000000"
@@ -89,12 +62,13 @@ export ARM_TENANT_ID="00000000-0000-0000-0000-000000000000"
 export ARM_SUBSCRIPTION_ID="00000000-0000-0000-0000-000000000000"
 ```
 
-### Examples configurations
+#### Examples configurations
 
 ```bash
-cd examples_config/deployment/
+cd examples_config/deployment
+
 terraform init
-terraform fmt -recursive
+terraform plan -var-file="../configurations/default.tfvars"
 
 terraform apply -var-file="../configurations/default.tfvars"
 terraform output
@@ -102,61 +76,16 @@ terraform output
 terraform destroy -var-file="../configurations/default.tfvars"
 ```
 
-### Examples cases
+#### Examples cases
 
 ```bash
 cd examples_cases/startup
-terraform init
-terraform fmt -recursive
 
-terraform apply
+terraform init
+terraform plan
+
+terraform apply -auto-approve
 terraform output
 
-terraform destroy -auto-approve
-```
-
-
-## Docs
-
-### Changelog
-
-### Dependenbot
-
-### Rover
-
-Based on article [The Magic of Visualizing Your Cloud Infrastructure: Real-time Terraform Visualization.](https://medium.com/@prasadanilmore/the-magic-of-visualizing-your-cloud-infrastructure-real-time-terraform-visualization-c85ac0ca4933) that shows how to use the tool developed in [im2nguyen/rover](https://github.com/im2nguyen/rover).
-
-```bash
-docker pull im2nguyen/rover:latest
-
-cd examples_config/deployment/
-terraform init
-terraform plan -out=tfplan -var-file="../configurations/default.tfvars"
-terraform show -json tfplan > tfplan.json
-
-docker run --rm -it -p 9000:9000 -v $(pwd)/tfplan.json:/src/tfplan.json im2nguyen/rover:latest -planJSONPath=tfplan.json
-```
-
-Open `http://localhost:9000`
-
-#### Generate static files
-
-```bash
-docker run --rm -it -p 9000:9000 -v $(pwd):/src im2nguyen/rover -planJSONPath=tfplan.json -standalone true
-```
-
-#### Terragrunt plan output
-
-```bash
-cd lm-aml-accelerator-draft/platform/environments
-terragrunt run-all show -json tfplan
-terragrunt run-all show -json tfplan > tfplan.json
-```
-
-#### PowerShell
-
-```powershell
-docker run --rm -it -p 9000:9000 -v "${PWD}\tfplan.json:/src/tfplan.json" im2nguyen/rover:latest -planJSONPath="tfplan.json"
-
-docker run --rm -it -p 9000:9000 -v "${PWD}:/src" im2nguyen/rover -planJSONPath="tfplan.json" -standalone true
+terraform destroy 
 ```
